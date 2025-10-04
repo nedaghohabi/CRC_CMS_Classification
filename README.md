@@ -6,9 +6,9 @@ This repository contains code and configs for our study:
 We train a ResNet-34 CNN on tumor tiles from TCGA COAD/READ histopathology whole-slide images (WSIs) to predict **CMS1–CMS4** subtypes. Labels are derived from RNA-seq using the **CMSclassifier** package. The repo includes:
 - Training & evaluation on COAD/READ (10-fold CV + held-out test)
 - Tile-level inference + **sample-level majority voting** for **unclassified** cases
-- Pointers to external tools for **WSI preprocessing** and **transcriptomic CMS label generation**
+- Pointers to  **WSI preprocessing** and **transcriptomic CMS label generation**
 
-> ⚠️ **Note**: This code is research-grade. External validation is required before any clinical use.
+> **Note**: This code is research-grade. External validation is required before any clinical use.
 
 ---
 
@@ -24,7 +24,6 @@ We train a ResNet-34 CNN on tumor tiles from TCGA COAD/READ histopathology whole
 - [Results Artifacts](#results-artifacts)
 - [Citations](#citations)
 - [License](#license)
-- [Acknowledgments](#acknowledgments)
 
 ---
 
@@ -33,7 +32,7 @@ We train a ResNet-34 CNN on tumor tiles from TCGA COAD/READ histopathology whole
 - **Backbone**: ResNet-34 (ImageNet-pretrained), first conv optionally replaced with 5×5 (stride=2, pad=2)
 - **Input**: tiles **224×224** randomly cropped from **512×512** tumor patches
 - **Cohorts**: TCGA **COAD** and **READ**, trained **separately** with identical settings
-- **Split**: Default **10-fold CV** on tiles + **10% held-out test** (configurable)
+- **Split**: Default **10-fold CV** on tiles + **10% held-out test**
 - **Metrics**: Accuracy, Precision/Recall/F1, **ROC-AUC** (per-class, micro, macro), Confusion Matrix
 - **Post-hoc**: Predict **unclassified** samples via tile-level thresholds + majority voting
 
@@ -48,22 +47,19 @@ WSIs and RNA-seq come from **TCGA**.
   - Download format: **.svs**
 - **Tumor ROI annotation & tiling**: We used QuPath scripting to annotate tumor regions (pathologist-supervised), tessellate into **512×512** tiles at 20×, remove non-informative tiles, and export JPGs.
 
-👉 **Preprocessing helper repo** (annotation + tiling scripts):  
+**Preprocessing helper repo** (annotation + tiling scripts):  
 **[ADD_LINK_HERE to the external preprocessing repository]**
 
 Expected folder layout after preprocessing (example):
 
 
-
-> Tip: We kept tiles with <50% background and discarded out-of-focus/artifact tiles. Update thresholds in your preprocessing repo as needed.
-
 ---
 
 ## CMS Label Generation (RNA-seq)
 
-Labels are derived using **CMSclassifier** on TCGA RNA-seq (FPKM-UQ), following the **RF + SSP consensus** approach (match required; no extra cut-offs).
+Labels are derived using **CMSclassifier** on TCGA RNA-seq (FPKM-UQ), following the **RF + SSP consensus** approach.
 
-👉 **CMS label generation helper repo/script**:  
+**CMS label generation helper repo/script**:  
 **[ADD_LINK_HERE to the external CMSclassifier R repository/script]**
 
 We used:
@@ -72,15 +68,14 @@ We used:
 - **CMSclassifier** (RF posterior ≥ 0.5) and **SSP** after row-centering
 - Final label retained only if **RF == SSP**; otherwise **unclassified**
 
-
 ---
 
 ## Environment
 
 - **Python**: 3.9+
 - **PyTorch**: 2.x (CUDA 11.8 recommended)
-- **R** (for CMSclassifier; run in the external repo)
-- **QuPath** 0.3.2 (if you reproduce annotations/tiling)
+- **R** (CMSclassifier; run in the external repo)
+- **QuPath** 0.3.2 (annotations/tiling)
 
 Create a conda env (example):
 ```bash
@@ -133,18 +128,9 @@ tqdm
 pyyaml
 opencv-python
 
-
-configs/coad.yaml
-
-
-dataset_name: COAD
-data_root: ./data/COAD/tiles
-labels_csv: ./labels/coad_labels.csv
-
 image_size: 224
 tile_size: 512
 batch_size: 16
-num_workers: 8
 epochs: 5
 
 model:
@@ -161,7 +147,7 @@ optimizer:
 
 cv:
   folds: 10
-  split_level: tile   # tile | patient (set to patient if you want stricter splitting)
+  split_level: tile 
   test_fraction: 0.10
   stratified: true
 
@@ -175,9 +161,6 @@ inference:
   voting: majority
 
 
-## training--evaluation
-
-python -m src.train_eval --config ./configs/coad.yaml --out ./results/coad
 
 Outputs:
 Per-fold metrics: accuracy, precision/recall/F1, ROC-AUC (per-class, micro, macro)
