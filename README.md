@@ -3,10 +3,10 @@
 This repository contains code and configs for our study:
 **“Image-Based Consensus Molecular Subtype Classification of Colorectal Cancer using Deep Learning.”**
 
-We train a ResNet-34 CNN on tumor tiles from TCGA COAD/READ histopathology whole-slide images (WSIs) to predict **CMS1–CMS4** subtypes. Labels are derived from coresponding RNA-seq data. The repo includes:
+We train a ResNet-34 CNN on tumor tiles from TCGA COAD (colon adenocarcinoma) & READ (rectum adenocarcinoma) histopathology whole-slide images (WSIs) to predict colorectal cancer **CMS1–CMS4** subtypes. Labels are derived from coresponding RNA-seq data. The repo includes:
 - Training & evaluation on COAD/READ (10-fold CV + held-out test)
 - Tile-level inference + sample-level majority voting for unclassified cases
-- Pointers to  WSI preprocessing and transcriptomic CMS label generation
+- whole-slide images preprocessing and transcriptomic CMS label generation
 
 ![Workflow](<img width="4938" height="994" alt="image" src="https://github.com/user-attachments/assets/96022c1d-dc9b-4928-a8f2-d5d7f41a3f87" />
 )
