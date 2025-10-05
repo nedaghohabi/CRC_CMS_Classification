@@ -8,7 +8,7 @@ We train a ResNet-34 CNN on tumor tiles from TCGA COAD/READ histopathology whole
 - Tile-level inference + sample-level majority voting for unclassified cases
 - Pointers to  WSI preprocessing and transcriptomic CMS label generation
 
-![Workflow](<img width="4938" height="994" alt="image" src="https://github.com/user-attachments/assets/16769843-d7d6-4cb4-ab13-01dafdf9f7f3" />
+![Workflow](<img width="4938" height="994" alt="image" src="https://github.com/user-attachments/assets/96022c1d-dc9b-4928-a8f2-d5d7f41a3f87" />
 )
 
 ---
