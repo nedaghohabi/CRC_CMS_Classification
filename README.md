@@ -19,7 +19,6 @@ We train a ResNet-34 CNN on tumor tiles from TCGA COAD (colon adenocarcinoma) & 
 - [CMS Label Generation (RNA-seq)](#cms-label-generation-rna-seq)
 - [Environment](#environment)
 - [Training & Evaluation](#training--evaluation)
-- [Prediction for Unclassified Samples](#prediction-for-unclassified-samples)
 
 ---
 
@@ -101,8 +100,4 @@ The model was trained on manually annotated tumor tiles using a **ResNet-34** ba
 - Horizontal flip (p = 0.5)  
 - Vertical flip (p = 0.5)  
 - Rotation ± 45°  
-
-#### Inference  
-- Probability threshold = 0.5  
-- Majority-vote aggregation across tiles 
 
