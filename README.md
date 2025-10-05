@@ -1,14 +1,15 @@
-# Image-Based CMS Classification of Colorectal Cancer (ResNet-34)
+# Image-Based CMS Classification of Colorectal Cancer
 
 This repository contains code and configs for our study:
 **“Image-Based Consensus Molecular Subtype Classification of Colorectal Cancer using Deep Learning.”**
 
-We train a ResNet-34 CNN on tumor tiles from TCGA COAD/READ histopathology whole-slide images (WSIs) to predict **CMS1–CMS4** subtypes. Labels are derived from RNA-seq using the **CMSclassifier** package. The repo includes:
+We train a ResNet-34 CNN on tumor tiles from TCGA COAD/READ histopathology whole-slide images (WSIs) to predict **CMS1–CMS4** subtypes. Labels are derived from coresponding RNA-seq data. The repo includes:
 - Training & evaluation on COAD/READ (10-fold CV + held-out test)
-- Tile-level inference + **sample-level majority voting** for **unclassified** cases
-- Pointers to  **WSI preprocessing** and **transcriptomic CMS label generation**
+- Tile-level inference + sample-level majority voting for unclassified cases
+- Pointers to  WSI preprocessing and transcriptomic CMS label generation
 
-> **Note**: This code is research-grade. External validation is required before any clinical use.
+![Workflow](<img width="4938" height="994" alt="image" src="https://github.com/user-attachments/assets/16769843-d7d6-4cb4-ab13-01dafdf9f7f3" />
+)
 
 ---
 
@@ -17,11 +18,8 @@ We train a ResNet-34 CNN on tumor tiles from TCGA COAD/READ histopathology whole
 - [Data & Preprocessing](#data--preprocessing)
 - [CMS Label Generation (RNA-seq)](#cms-label-generation-rna-seq)
 - [Environment](#environment)
-- [Repository Structure](#repository-structure)
-- [Configuration](#configuration)
 - [Training & Evaluation](#training--evaluation)
 - [Prediction for Unclassified Samples](#prediction-for-unclassified-samples)
-- [Results Artifacts](#results-artifacts)
 - [Citations](#citations)
 - [License](#license)
 
@@ -29,10 +27,10 @@ We train a ResNet-34 CNN on tumor tiles from TCGA COAD/READ histopathology whole
 
 ## Overview
 
-- **Backbone**: ResNet-34 (ImageNet-pretrained), first conv optionally replaced with 5×5 (stride=2, pad=2)
+- **Backbone**: ResNet-34 (ImageNet-pretrained), first conv replaced with 5×5 (stride=2, pad=2)
 - **Input**: tiles **224×224** randomly cropped from **512×512** tumor patches
 - **Cohorts**: TCGA **COAD** and **READ**, trained **separately** with identical settings
-- **Split**: Default **10-fold CV** on tiles + **10% held-out test**
+- **Split**: **10-fold CV** on tiles + **10% held-out test**
 - **Metrics**: Accuracy, Precision/Recall/F1, **ROC-AUC** (per-class, micro, macro), Confusion Matrix
 - **Post-hoc**: Predict **unclassified** samples via tile-level thresholds + majority voting
 
@@ -74,95 +72,44 @@ We used:
 
 - **Python**: 3.9+
 - **PyTorch**: 2.x (CUDA 11.8 recommended)
-- **R** (CMSclassifier; run in the external repo)
+- **R** (CMSclassifier)
 - **QuPath** 0.3.2 (annotations/tiling)
 
-Create a conda env (example):
-```bash
-conda create -n cms-imaging python=3.9 -y
-conda activate cms-imaging
-pip install -r requirements.txt
+## Training & Evaluation
+The model was trained on manually annotated tumor tiles using a **ResNet-34** backbone pre-trained on **ImageNet**. Each whole-slide image was tessellated into **512×512 px tiles**, and randomly cropped to **224×224 px** during training.  
+Training was performed using **10-fold stratified cross-validation**, with 10 % of the data held out for testing in each fold. The optimizer was **Adam** with AMSGrad enabled, and standard data augmentations were applied to improve generalization.
 
-.
-├── configs/
-│   ├── coad.yaml
-│   └── read.yaml
-├── data/                      # (not tracked) tiles organized by CMS class
-├── labels/
-│   ├── coad_labels.csv
-│   └── read_labels.csv
-├── src/
-│   ├── datasets.py            # Tile dataset, transforms, samplers
-│   ├── model.py               # ResNet-34 builder (optionally 5×5 first conv)
-│   ├── train_eval.py          # k-fold CV + held-out test
-│   ├── predict_unclassified.py# tile-level inference + majority voting
-│   ├── metrics.py             # AUC, reports, confusions
-│   └── utils.py               # logging, seed, checkpoint IO
-├── results/
-│   ├── coad/
-│   │   ├── cv/                # per-fold metrics, ROC, confusion
-│   │   └── test/              # held-out test metrics & plots
-│   └── read/
-│       ├── cv/
-│       └── test/
-├── assets/
-│   └── figures/
-│       └── workflow_main_1.png
-├── requirements.txt
-├── README.md
-└── LICENSE
+### Configuration Summary
 
+#### Image & Tile Parameters  
+- Image size = 224 px  
+- Tile size = 512 px  
+- Batch size = 16  
+- Epochs = 5  
 
-requirements.txt
+#### Model  
+- Backbone = ResNet-34  
+- Pre-trained on ImageNet  
+- First convolution = 5×5 kernel  
+- Number of classes = 4  
 
+#### Optimizer  
+- Type = Adam  
+- Learning rate = 1 × 10⁻⁴  
+- Weight decay = 5 × 10⁻⁴  
+- AMSGrad = True  
 
-torch
-torchvision
-torchaudio
-numpy
-pandas
-scikit-learn
-scipy
-matplotlib
-tqdm
-pyyaml
-opencv-python
+#### Cross-Validation  
+- Folds = 10  
+- Test fraction = 0.10  
+- Stratified = True  
 
-image_size: 224
-tile_size: 512
-batch_size: 16
-epochs: 5
+#### Data Augmentation  
+- Horizontal flip (p = 0.5)  
+- Vertical flip (p = 0.5)  
+- Rotation ± 45°  
 
-model:
-  backbone: resnet34
-  imagenet_pretrained: true
-  first_conv_5x5: true
-  num_classes: 4
+#### Inference  
+- Probability threshold = 0.5  
+- Majority-vote aggregation across tiles 
 
-optimizer:
-  name: adam
-  lr: 1e-4
-  weight_decay: 5e-4
-  amsgrad: true
-
-cv:
-  folds: 10
-  split_level: tile 
-  test_fraction: 0.10
-  stratified: true
-
-augment:
-  hflip_prob: 0.5
-  vflip_prob: 0.5
-  rotate_deg: 45
-
-inference:
-  prob_threshold: 0.5
-  voting: majority
-
-
-
-Outputs:
-Per-fold metrics: accuracy, precision/recall/F1, ROC-AUC (per-class, micro, macro)
-Plots: ROC curves & confusion matrices (saved under results/<cohort>/cv/)
-Best fold checkpoint → evaluated on held-out test set (saved under results/<cohort>/test/)
