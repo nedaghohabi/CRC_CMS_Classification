@@ -20,8 +20,6 @@ We train a ResNet-34 CNN on tumor tiles from TCGA COAD/READ histopathology whole
 - [Environment](#environment)
 - [Training & Evaluation](#training--evaluation)
 - [Prediction for Unclassified Samples](#prediction-for-unclassified-samples)
-- [Citations](#citations)
-- [License](#license)
 
 ---
 
@@ -40,16 +38,13 @@ We train a ResNet-34 CNN on tumor tiles from TCGA COAD/READ histopathology whole
 
 WSIs and RNA-seq come from **TCGA**.
 
-- **WSI Source**: TCGA (GDC)  
-  - Portal: https://portal.gdc.cancer.gov/
-  - Download format: **.svs**
-- **Tumor ROI annotation & tiling**: We used QuPath scripting to annotate tumor regions (pathologist-supervised), tessellate into **512×512** tiles at 20×, remove non-informative tiles, and export JPGs.
+- **WSI Source**: TCGA (GDC) https://portal.gdc.cancer.gov/
+- **Tumor ROI annotation & tiling**:  
+Tumor regions were manually annotated under pathologist supervision using **QuPath** scripting. Each whole-slide image was reviewed at low magnification to mark tumor areas while excluding artifacts. Annotated regions were then **tessellated into 512×512 px tiles** at **20× magnification** (0.5 µm/px) with 50 px overlap. The final curated tumor tiles were exported in **JPEG format** for downstream deep learning analysis.
 
-**Preprocessing helper repo** (annotation + tiling scripts):  
-**[ADD_LINK_HERE to the external preprocessing repository]**
+**Preprocessing repo** (annotation + tiling scripts): (https://github.com/nedaghohabi/Histopathology-Image-Tiling
 
-Expected folder layout after preprocessing (example):
-
+- The manually annotated and tiled histopathology images are publicaly availabel at Zenodo: https://zenodo.org/uploads/17266566 
 
 ---
 
@@ -57,8 +52,7 @@ Expected folder layout after preprocessing (example):
 
 Labels are derived using **CMSclassifier** on TCGA RNA-seq (FPKM-UQ), following the **RF + SSP consensus** approach.
 
-**CMS label generation helper repo/script**:  
-**[ADD_LINK_HERE to the external CMSclassifier R repository/script]**
+CMS label generation repo/script: https://github.com/nedaghohabi/TCGA-RNA-seq 
 
 We used:
 - **TCGAbiolinks** to retrieve RNA-seq & clinical data
