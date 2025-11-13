@@ -8,7 +8,7 @@ We train a ResNet-34 CNN on tumor tiles from TCGA COAD (colon adenocarcinoma) & 
 - Tile-level inference + sample-level majority voting for unclassified cases
 - whole-slide images preprocessing and transcriptomic CMS label generation
 
-!['Workflow'](Workflow.png)
+![Workflow](Workflow.png)
 ---
 
 ## Contents
