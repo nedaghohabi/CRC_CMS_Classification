@@ -8,9 +8,8 @@ We train a ResNet-34 CNN on tumor tiles from TCGA COAD (colon adenocarcinoma) & 
 - Tile-level inference + sample-level majority voting for unclassified cases
 - whole-slide images preprocessing and transcriptomic CMS label generation
 
-![Workflow](<img width="4938" height="994" alt="image" src="https://github.com/user-attachments/assets/96022c1d-dc9b-4928-a8f2-d5d7f41a3f87" />
-)
 
+!['Workflow'](Workflow.png)
 ---
 
 ## Contents
@@ -19,6 +18,8 @@ We train a ResNet-34 CNN on tumor tiles from TCGA COAD (colon adenocarcinoma) & 
 - [CMS Label Generation (RNA-seq)](#cms-label-generation-rna-seq)
 - [Environment](#environment)
 - [Training & Evaluation](#training--evaluation)
+- [Repo Structure](#repo--structure)
+- [License](#license)
 
 ---
 
@@ -67,6 +68,7 @@ We used:
 - **PyTorch**: 2.x (CUDA 11.8 recommended)
 - **R** (CMSclassifier)
 - **QuPath** 0.3.2 (annotations/tiling)
+- See requirements.txt
 
 ## Training & Evaluation
 The model was trained on manually annotated tumor tiles using a **ResNet-34** backbone pre-trained on **ImageNet**. Each whole-slide image was tessellated into **512×512 px tiles**, and randomly cropped to **224×224 px** during training. Training was performed using **10-fold stratified cross-validation**, with 10 % of the data held out for testing in each fold. The optimizer was **Adam** with AMSGrad enabled, and standard data augmentations were applied to improve generalization.
@@ -101,3 +103,31 @@ The model was trained on manually annotated tumor tiles using a **ResNet-34** ba
 - Vertical flip (p = 0.5)  
 - Rotation ± 45°  
 
+## Repository Structure
+
+```
+
+crc_cms_classification/
+├── exemplar_data    # All examplar data files
+│   ├── example_read_tile
+│       │   ├── CMS1/
+│       │   ├── CMS2/
+│       │   ├── CMS3/
+│       │   └── CMS4/
+│   ├── example_coad_tile
+│       │   ├── CMS1/
+│       │   ├── CMS2/
+│       │   ├── CMS3/
+│       │   └── CMS4/
+├── models
+├── src
+│   ├──  training.py
+│   ├──  inference.py
+├── README.md
+├── LICENSE
+├── requirements.txt
+```
+
+## License
+
+See MIT license
